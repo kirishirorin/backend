@@ -1,0 +1,14 @@
+<form method="post" action="/rolls">
+    <label>
+        Длина
+        <input type="text" required name="length">
+    </label>
+    <label>
+        Вес
+        <input type="text" required name="weight">
+    </label>
+  <input type="submit" value="Создать новый ролл">
+</form>
+<form method="get" action="{{ url_for('index') }}">
+   <input type="submit" value="Перейти на главное меню">
+</form>

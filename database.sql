@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS rolls
+(id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+ length INT,
+ weight INT,
+ created_at DATE,
+ deleted_at DATE);

@@ -1,0 +1,21 @@
+{% with messages = get_flashed_messages(with_categories=True) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div style="background-color: 76f274;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<table>
+  <dl>
+    <dt>id: {{ roll.id }}</dt>
+    <dd>length: {{ roll.length }}</dd>
+    <dd>weight: {{ roll.weight }}</dd>
+    <dd>created_at: {{ roll.created_at }}</dd>
+    <dd>deleted_at: {{ roll.deleted_at }}</dd>
+  </dl>
+</table>
+<form method="get" action="{{ url_for('index') }}">
+   <input type="submit" value="Перейти на главное меню">
+</form>

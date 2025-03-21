@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["Igor <cherkashov270999@gmail.com>"]
+readme = "README.md"
+packages = [
+  { include = "backend" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = "^3.1.0"
+python-dotenv = "^1.0.1"
+psycopg2-binary = "^2.9.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry.scripts]
+backend = "backend.app:main"
