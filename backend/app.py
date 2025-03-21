@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from backend.db import Database
 from collections import namedtuple
+from datetime import datetime, date
 
 
 load_dotenv()
@@ -18,11 +19,18 @@ def index():
 
 @app.get('/rolls/list')
 def roll_list():
+    data = request.form.to_dict()
     db = Database(DATABASE_URL)
     rolls = db.show()
+    query = ''
+    if data:
+        if data['category'] == 'id' or data['category'] == 'length' or data['category'] == 'weight':
+            query = int(data['query'])
+        else:
+            query = datetime.strptime(data['query'], '%d.%m.%Y').date()
+        rolls = list(filter(lambda roll: roll[data['category']] == query, rolls))
     db.close_conn()
-    return render_template('roll_list.html', rolls=rolls)
-
+    return render_template('roll_list.html', rolls=rolls, search=query)
 
 @app.get('/rolls/<id>')
 def roll_select(id):
@@ -41,7 +49,7 @@ def roll_new():
 
 
 @app.post('/rolls')
-def polls_post():
+def rolls_post():
     data = request.form.to_dict()
     db = Database(DATABASE_URL)
     db.insert(data)
@@ -51,10 +59,17 @@ def polls_post():
     return redirect(url_for('roll_select', id=id))
 
 
-@app.post('/rolls/<id>/delete')
-def roll_delete(id):
+@app.get('/rolls/edit')
+def roll_edit():
+    return render_template('roll_patch.html')
+
+
+@app.post('/rolls/patch')
+def roll_patch():
     db = Database(DATABASE_URL)
-    roll = db.select(id)
-    db.delete(id)
+    data = request.form.to_dict()
+    id = int(data['id'])
+    data['deleted_at'] = date.today()
+    db.update(data)
     flash('Рулон был успешно удалён', 'success')
-    return redirect(url_for('roll_select', roll=roll))
+    return redirect(url_for('roll_select', id=id))

@@ -42,5 +42,13 @@ class Database():
             self.conn.commit()
 
 
+
+    def update(self, roll):
+        query = 'UPDATE rolls SET deleted_at = %s WHERE id = %s;'
+        with self.conn.cursor() as cursor:
+            cursor.execute(query, (roll['deleted_at'], roll['id']))
+            self.conn.commit()
+
+
     def close_conn(self):
         self.conn.close()

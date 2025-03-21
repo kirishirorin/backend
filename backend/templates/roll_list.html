@@ -1,3 +1,15 @@
+<form action="{{ url_for('roll_list') }}" method="get">
+  <h2>Категория</h2>
+  <select name="category">
+    <option value="id">id</option>
+    <option value="length" selected>Длина</option>
+    <option value="weight" selected>Вес</option>
+    <option value="created_at">Дата создания</option>
+    <option value="deleted_at">Дата удаления</option>
+  </select>
+  <input type="search" name="query" value="{{ search }}"/>
+  <input type="submit" value="Найти"/>
+</form>
 <table>
   {% for roll in rolls %}
   <dl>
