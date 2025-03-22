@@ -1,6 +1,6 @@
 from datetime import date
 import psycopg2
-from psycopg2.extras import NamedTupleCursor
+from psycopg2.extras import DictCursor
 
 
 class Database():
@@ -10,7 +10,7 @@ class Database():
 
     def show(self):
         query = 'SELECT * FROM rolls;'
-        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
+        with self.conn.cursor(cursor_factory=DictCursor) as cursor:
             cursor.execute(query)
             rolls = cursor.fetchall()
             return rolls
@@ -18,7 +18,7 @@ class Database():
 
     def select(self, id):
         query = 'SELECT * FROM rolls WHERE id = %s;'
-        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
+        with self.conn.cursor(cursor_factory=DictCursor) as cursor:
             cursor.execute(query, (id,))
             roll = cursor.fetchone()
             return roll
@@ -26,10 +26,10 @@ class Database():
 
     def show_last_id(self):
         query = 'SELECT id FROM rolls ORDER BY id DESC LIMIT 1;'
-        with self.conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
+        with self.conn.cursor(cursor_factory=DictCursor) as cursor:
             cursor.execute(query)
             id = cursor.fetchone()
-            return id.id
+            return id['id']
 
 
     def insert(self, datas):
