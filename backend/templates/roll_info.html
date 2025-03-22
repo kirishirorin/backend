@@ -1,0 +1,15 @@
+<form method="get" action="{{ url_for('roll_info_show') }}">
+  <label>
+      Начальный период
+      <input type="text" required name="start_period">
+  </label>
+  <label>
+      Конечный период
+      <input type="text" required name="end_period">
+  </label>
+  <input type="submit" value="Получить статистику">
+</form>
+
+<form method="get" action="{{ url_for('index') }}">
+   <input type="submit" value="Перейти на главное меню">
+</form>

@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from backend.db import Database
 from collections import namedtuple
 from datetime import datetime, date
+from statistics import mean
 
 
 load_dotenv()
@@ -19,7 +20,7 @@ def index():
 
 @app.get('/rolls/list')
 def roll_list():
-    data = request.form.to_dict()
+    data = request.args
     db = Database(DATABASE_URL)
     rolls = db.show()
     query = ''
@@ -49,7 +50,7 @@ def roll_new():
 
 
 @app.post('/rolls')
-def rolls_post():
+def roll_post():
     data = request.form.to_dict()
     db = Database(DATABASE_URL)
     db.insert(data)
@@ -71,5 +72,43 @@ def roll_patch():
     id = int(data['id'])
     data['deleted_at'] = date.today()
     db.update(data)
+    db.close_conn()
     flash('Рулон был успешно удалён', 'success')
     return redirect(url_for('roll_select', id=id))
+
+
+
+@app.get('/rolls/info')
+def roll_info():
+    return render_template('roll_info.html')
+
+
+@app.get('/rolls/info/show')
+def roll_info_show():
+    data = request.args
+    db = Database(DATABASE_URL)
+    rolls = db.show()
+    start_date = datetime.strptime(data['start_period'], '%d.%m.%Y').date()
+    end_date = datetime.strptime(data['end_period'], '%d.%m.%Y').date()
+    filter_data = list(filter(lambda roll: roll.created_at >= start_date and roll.created_at <= end_date, rolls))
+    filter_data_deleted = list(filter(lambda roll: roll.deleted_at, filter_data))
+    count_created = len(filter_data)
+    count_deleted = len(filter_data_deleted)
+    avg_length = round(mean(list(map(lambda roll: roll.length, filter_data))), 2)
+    avg_weight = round(mean(list(map(lambda roll: roll.weight, filter_data))), 2)
+    max_length = max(list(map(lambda roll: roll.length, filter_data)))
+    min_length = min(list(map(lambda roll: roll.length, filter_data)))
+    max_weight = max(list(map(lambda roll: roll.weight, filter_data)))
+    min_weight = min(list(map(lambda roll: roll.weight, filter_data)))
+    sum_weight = sum(list(map(lambda roll: roll.weight, filter_data)))
+    max_delta = max(list(map(lambda roll: (roll.deleted_at - roll.created_at), filter_data_deleted)))
+    min_delta = min(list(map(lambda roll: (roll.deleted_at - roll.created_at), filter_data_deleted)))
+    info = {'start_date': start_date, 'end_date': end_date,
+            'count_created': count_created, 'count_deleted': count_deleted,
+            'avg_length': avg_length, 'avg_weight': avg_weight,
+            'max_length': max_length, 'min_length': min_length,
+            'max_weight': max_weight, 'min_weight': min_weight,
+            'sum_weight': sum_weight,
+            'max_delta': max_delta, 'min_delta': min_delta}
+    db.close_conn()
+    return render_template('roll_info_show.html', info=info)
